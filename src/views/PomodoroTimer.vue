@@ -1,26 +1,38 @@
 <template>
+  <!-- Temporizador -->
   <div class="flex items-center w-full h-[75%] p-2">
-    <div class="w-[75%] flex justify-center">
-      <button :class="classTime">
+    <div class="flex flex-wrap items-center justify-center gap-4 w-full">
+      <button :class="classTimer">
         {{ formatTime(timePomodoro) }}
       </button>
     </div>
-
-    <div class="w-[25%] flex-row text-center align-center">
-      <p class="border-2 border-blue-200 rounded-lg p-2 text-3xl text-grey">
-        Pomodoros: {{ amountPomodoro }}
-      </p>
-      <p class="border-2 border-blue-200 rounded-lg p-2 text-3xl text-grey mt-3">
-        Pausas: {{ amountPause }}
-      </p>
-    </div>
   </div>
 
-  <div class="flex items-center justify-around w-full h-[25%] p-2">
-    <ButtonPomodoro :textButton="buttonStart" @click="handleClick()" />
-    <ButtonPomodoro textButton="Reiniciar" @click="restart()" />
+  <!-- Botões de controle -->
+  <div class="flex flex-wrap items-center justify-center gap-4 w-full">
+    <ButtonPomodoro
+      :textButton="buttonStart"
+      class="w-full sm:w-5/12 md:w-1/4 text-base sm:text-xl md:text-2xl"
+      @click="handleClick()"
+    />
+    <ButtonPomodoro
+      textButton="Reiniciar"
+      class="w-full sm:w-5/12 md:w-1/4 text-base sm:text-xl md:text-2xl"
+      @click="restart()"
+    />
+  </div>
+
+  <!-- Contadores -->
+  <div class="flex flex-wrap items-center justify-center gap-4 w-full p-4">
+    <p class="border border-blue-300 rounded-lg p-3 text-lg sm:text-xl md:text-2xl text-gray-700">
+      Pomodoros: {{ amountPomodoro }}
+    </p>
+    <p class="border border-blue-300 rounded-lg p-3 text-lg sm:text-xl md:text-2xl text-gray-700">
+      Pausas: {{ amountPause }}
+    </p>
   </div>
 </template>
+
 
 <script setup>
 import ButtonPomodoro from '@/components/ButtonPomodoro.vue'
@@ -31,6 +43,10 @@ const props = defineProps({
     type: Number,
     required: true,
     default: 25,
+  },
+  classTimer: {
+    type: String,
+    default: 'w-74 h-74 border-4 border-blue-200 text-grey-200 text-[75px] rounded-full flex items-center justify-center'
   },
 })
 
@@ -48,9 +64,6 @@ const timePomodoro = ref(props.duration * 60 * 1000)
 const buttonStart = ref('Iniciar')
 const amountPomodoro = ref(0)
 const amountPause = ref(0)
-const classTime = ref(
-  'w-74 h-74 border-4 border-blue-200 text-grey-200 text-[75px] rounded-full flex items-center justify-center',
-)
 let interval
 let notification
 
@@ -59,8 +72,6 @@ watch(
   (newVal) => {
     buttonStart.value = 'Iniciar'
     timePomodoro.value = newVal * 60 * 1000
-    classTime.value =
-      'w-74 h-74 border-4 border-blue-200 text-grey-200 text-[75px] rounded-full flex items-center justify-center'
     clearInterval(interval)
   },
 )
@@ -98,8 +109,6 @@ function startPomodoro() {
       notificationEndPomodoro()
       timePomodoro.value = 0 // Finaliza o tempo
       buttonStart.value = 'Iniciar'
-      classTime.value =
-        'w-54 h-54 border-4 border-green-300 text-green-400 text-[50%] rounded-full flex items-center justify-center'
       if (props.duration === '25') {
         amountPomodoro.value++
       } else {
@@ -116,7 +125,7 @@ function formatTime(ms) {
 }
 
 function notificationEndPomodoro() {
-console.log()
+  console.log()
 
   if (Notification.permission === 'granted') {
     notification = new Notification('Pomodoro finalizado!', {
